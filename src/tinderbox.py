@@ -18,7 +18,7 @@ GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 width = 128
 height = 64
 serial = i2c(port=1, address=0x3c)
-device = ssd1306(serial)
+device = ssd1306(serial, width, height)
 
 # Draw a black filled box to clear the image.
 def blank_screen():
@@ -26,7 +26,7 @@ def blank_screen():
         draw.rectangle((0,0,width,height), outline=0, fill=0)
 
 with canvas(device) as draw:
-    draw.text((20,20), "Connecting", fill="white")
+    draw.text((20,20), "Connecting", fill=1)
 
 # Draw some shapes.
 # First define some constants to allow easy resizing of shapes.
