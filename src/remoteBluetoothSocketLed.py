@@ -1,10 +1,11 @@
 import RPi.GPIO as GPIO
 import time
 import bluetooth
+import subprocess
 
+subprocess.call(["sudo", "hciconfig", "hci0", "piscan"])
 led_gpio = [22, 27, 17, 4]
 server_port = 2
-            
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
