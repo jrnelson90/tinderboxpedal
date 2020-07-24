@@ -1,7 +1,7 @@
 import time
-import Adafruit_SSD1306
-from PIL import Image
-from PIL import ImageDraw
+from luma.core.interface.serial import i2c
+from luma.core.render import canvas
+from luma.oled.device import ssd1306
 from PIL import ImageFont
 import subprocess
 import RPi.GPIO as GPIO
@@ -14,30 +14,19 @@ GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-# Raspberry Pi pin configuration:
-RST = None     # on the PiOLED this pin isnt used
-
-# 128x64 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
-
-# Initialize library.
-disp.begin()
-
-# Clear display.
-disp.clear()
-disp.display()
-
-# Create blank image for drawing.
-# Make sure to create image with mode '1' for 1-bit color.
-width = disp.width
-height = disp.height
-image = Image.new('1', (width, height))
-
-# Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
+# Setup 128x64 I2C OLED Display:
+width = 128
+height = 64
+serial = i2c(port=1, address=0x3c)
+device = ssd1306(serial)
 
 # Draw a black filled box to clear the image.
-draw.rectangle((0,0,width,height), outline=0, fill=0)
+def blank_screen():
+    with canvas(device) as draw:
+        draw.rectangle((0,0,width,height), outline=0, fill=0)
+
+with canvas(device) as draw:
+    draw.text((20,20), "Connecting", fill="white")
 
 # Draw some shapes.
 # First define some constants to allow easy resizing of shapes.
@@ -63,7 +52,7 @@ client_sock.connect((server_address, server_port))
 try:
     while True:
         # Draw a black filled box to clear the image.
-        draw.rectangle((0,0,width,height), outline=0, fill=0)
+        blank_screen()
         new_press = False
         if GPIO.input(26):
             selected_slot = 1
@@ -77,22 +66,16 @@ try:
         if GPIO.input(20):
             selected_slot = 4
             new_press = True
-        
         if selected_slot != 0 and new_press == True:
             client_sock.send("{}".format(selected_slot))
-        
         # Write two lines of text.
-        draw.text((x+8, top),     " TinderBox v0.1",  font=font, fill=255)
-        draw.text((x+48, top+8),  "{}".format(selected_slot),  font=large_font, fill=255)
+        with canvas(device) as draw:
+            draw.text((x+8, top),     " TinderBox v0.1",  font=font, fill=255)
+            draw.text((x+48, top+8),  "{}".format(selected_slot),  font=large_font, fill=255)
 
         # Display image.
-        disp.image(image)
-        disp.display()
         time.sleep(.1)
-        
 finally:
     client_sock.close()
-    draw.rectangle((0,0,width,height), outline=0, fill=0)
-    disp.image(image)
-    disp.display()
+    blank_screen()
     GPIO.cleanup()
