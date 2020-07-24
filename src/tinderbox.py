@@ -26,7 +26,7 @@ def blank_screen():
         draw.rectangle((0,0,width,height), outline=0, fill=0)
 
 with canvas(device) as draw:
-    draw.text((20,20), "Connecting", fill=1)
+    draw.text((40,20), "Connecting", fill=1)
 
 # Draw some shapes.
 # First define some constants to allow easy resizing of shapes.
@@ -44,15 +44,20 @@ font = ImageFont.load_default()
 large_font = ImageFont.truetype('./Market_Deco.ttf', 56)
 selected_slot = 0;
 
+def updateSlotOnScreen():
+    with canvas(device) as draw:
+        draw.text((x+8, top), "TinderBox v0.2", font=font, fill=1)
+        draw.text((x+48, top+8), "{}".format(selected_slot), font=large_font, fill=1)
+
 server_address = "DC:A6:32:AF:F3:1C"
 server_port = 2
 client_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 client_sock.connect((server_address, server_port))
 
+updateSlotOnScreen()
+
 try:
     while True:
-        # Draw a black filled box to clear the image.
-        blank_screen()
         new_press = False
         if GPIO.input(26):
             selected_slot = 1
@@ -68,13 +73,10 @@ try:
             new_press = True
         if selected_slot != 0 and new_press == True:
             client_sock.send("{}".format(selected_slot))
-        # Write two lines of text.
-        with canvas(device) as draw:
-            draw.text((x+8, top),     " TinderBox v0.1",  font=font, fill=255)
-            draw.text((x+48, top+8),  "{}".format(selected_slot),  font=large_font, fill=255)
-
-        # Display image.
-        time.sleep(.1)
+            # Update screen with new selection
+            updateSlotOnScreen()
+            # Debounce pause
+            time.sleep(.1)
 finally:
     client_sock.close()
     blank_screen()
