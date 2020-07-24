@@ -3,7 +3,6 @@ from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306
 from PIL import ImageFont
-import subprocess
 import RPi.GPIO as GPIO
 import bluetooth
 
@@ -28,26 +27,20 @@ def blank_screen():
 with canvas(device) as draw:
     draw.text((40,20), "Connecting", fill=1)
 
-# Draw some shapes.
 # First define some constants to allow easy resizing of shapes.
 padding = -2
 top = padding
 bottom = height-padding
-# Move left to right keeping track of the current x position for drawing shapes.
-x = 0
 
-# Load default font.
+# Load default font
 font = ImageFont.load_default()
-
-# Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
-# Some other nice fonts to try: http://www.dafont.com/bitmap.php
 large_font = ImageFont.truetype('./Market_Deco.ttf', 56)
 selected_slot = 0;
 
 def updateSlotOnScreen():
     with canvas(device) as draw:
-        draw.text((x+8, top), "TinderBox v0.2", font=font, fill=1)
-        draw.text((x+48, top+8), "{}".format(selected_slot), font=large_font, fill=1)
+        draw.text((8, top), "TinderBox v0.2", font=font, fill=1)
+        draw.text((48, top+8), "{}".format(selected_slot), font=large_font, fill=1)
 
 server_address = "DC:A6:32:AF:F3:1C"
 server_port = 2
@@ -58,20 +51,17 @@ updateSlotOnScreen()
 
 try:
     while True:
-        new_press = False
+        new_press = 0
         if GPIO.input(26):
-            selected_slot = 1
-            new_press = True
+            new_press = 1
         if GPIO.input(19):
-            selected_slot = 2
-            new_press = True
+            new_press = 2
         if GPIO.input(21):
-            selected_slot = 3
-            new_press = True
+            new_press = 3
         if GPIO.input(20):
-            selected_slot = 4
-            new_press = True
-        if selected_slot != 0 and new_press == True:
+            new_press = 4
+        if new_press != 0 and new_press != selected_slot:
+            selected_slot = new_press
             client_sock.send("{}".format(selected_slot))
             # Update screen with new selection
             updateSlotOnScreen()
