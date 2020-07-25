@@ -27,7 +27,7 @@ bottom = height-padding
 
 # Load fonts
 font = ImageFont.load_default()
-medium_font = ImageFont.truetype('./Market_Deco.ttf', 16)
+medium_font = ImageFont.truetype('./roboto/Roboto-Regular.ttf', 14)
 logo_font = ImageFont.truetype('./Market_Deco.ttf', 24)
 large_font = ImageFont.truetype('./Market_Deco.ttf', 56)
 
@@ -80,8 +80,9 @@ def waitForBTDeviceSelection(devices):
         if nav_press == True or first_loop == True:
             if first_loop == True:
                 first_loop = False
-            list_space = 0
+            list_space = 12
             with canvas(device) as draw:
+                draw.text((0,0), "  Found {} Devices:".format(num_of_devices), fill=1)
                 for i, d in enumerate(devices, start=0):
                     print(d)
                     if i == selected_device:
@@ -105,8 +106,7 @@ connected = False
 while connected != True:
     while found_devices != True:
         with canvas(device) as draw:
-            draw.text((0,10), "Scanning For", font=medium_font, fill=1)
-            draw.text((0,28), "BT Devices...", font=medium_font, fill=1)
+            draw.text((20,16), "Scanning For\nBT Devices", font=medium_font, fill=1, align="center")
         devices = bluetooth.discover_devices(duration=10)
         if devices:
             response = waitForBTDeviceSelection(devices)
@@ -114,15 +114,14 @@ while connected != True:
                 server_address = response
                 found_devices = True
         else:
-            print("No BT Devices Found. Exiting")
+            print("No BT Devices Found")
             with canvas(device) as draw:
                 draw.text((0, 32), "Re-scan BT Devices?", fill=1)
             if waitForYNResponse() == False:
                 exit(0)
 
     with canvas(device) as draw:
-        draw.text((0,10), "Connecting to", font=medium_font, fill=1)
-        draw.text((0,28), "{}".format(server_address), font=medium_font, fill=1)
+        draw.text((4,8), "Connecting to\n{}".format(server_address), font=medium_font, fill=1, align="center")
     try:
         client_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         client_sock.connect((server_address, server_port))
@@ -130,9 +129,7 @@ while connected != True:
     except:
         print("Connecting to {} failed".format(server_address))
         with canvas(device) as draw:
-            draw.text((0,4), "Connection to", font=medium_font, fill=1)
-            draw.text((0,22), "{}".format(server_address), font=medium_font, fill=1)
-            draw.text((0,40), "failed", font=medium_font, fill=1)
+            draw.text((4,8), "Connecting to\n{}\nfailed".format(server_address), font=medium_font, fill=1, align="center")
             found_devices = False
             server_address = ""
         time.sleep(4)
