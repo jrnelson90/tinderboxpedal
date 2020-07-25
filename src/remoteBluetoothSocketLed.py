@@ -17,6 +17,8 @@ for led in led_gpio:
 server_sock.bind(("", server_port))
 server_sock.listen(1)
 
+print("Listening on BT port {}".format(server_port))
+
 client_sock,address = server_sock.accept()
 print("Accepted connection from {}".format(address))
 current_tone = 0
