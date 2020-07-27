@@ -7,12 +7,16 @@ import RPi.GPIO as GPIO
 import bluetooth
 
 # Setup Button GPIO
+BUTTON_1 = 20
+BUTTON_2 = 21
+BUTTON_3 = 19
+BUTTON_4 = 26
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(BUTTON_1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(BUTTON_2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(BUTTON_3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(BUTTON_4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # Setup 128x64 I2C OLED Display:
 width = 128
@@ -49,9 +53,9 @@ def waitForYNResponse():
     response = False
     press = ""
     while response != True:
-        if GPIO.input(21):
+        if GPIO.input(BUTTON_4):
             press = "yes"
-        if GPIO.input(20):
+        if GPIO.input(BUTTON_3):
             press = "no"
         if press != "":
             response = True
@@ -65,16 +69,16 @@ def waitForBTDeviceSelection(devices):
     first_loop = True
     while response != True:
         nav_press = False
-        if GPIO.input(26) and selected_device != 0:
+        if GPIO.input(BUTTON_1) and selected_device != 0:
             selected_device -= 1
             nav_press = True
-        if GPIO.input(21) and selected_device != (num_of_devices - 1):
+        if GPIO.input(BUTTON_3) and selected_device != (num_of_devices - 1):
             selected_device += 1
             nav_press = True
-        if GPIO.input(20):
+        if GPIO.input(BUTTON_4):
             selection_mac = devices[selected_device]
             response = True
-        if GPIO.input(19):
+        if GPIO.input(BUTTON_2):
             selection_mac = "rescan"
             response = True
         if nav_press == True or first_loop == True:
@@ -139,13 +143,13 @@ updateSlotOnScreen()
 try:
     while True:
         new_press = 0
-        if GPIO.input(26):
+        if GPIO.input(BUTTON_1):
             new_press = 1
-        if GPIO.input(19):
+        if GPIO.input(BUTTON_2):
             new_press = 2
-        if GPIO.input(21):
+        if GPIO.input(BUTTON_3):
             new_press = 3
-        if GPIO.input(20):
+        if GPIO.input(BUTTON_4):
             new_press = 4
         if new_press != 0 and new_press != selected_slot:
             selected_slot = new_press
