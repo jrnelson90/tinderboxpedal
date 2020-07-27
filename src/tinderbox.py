@@ -10,7 +10,6 @@ import bluetooth
 selected_slot = 0;
 server_port = 2;
 server_address = ""
-found_devices = False
 connected = False
 
 # these are based on the wireshark captures when selecting presets via the app, 
@@ -62,22 +61,22 @@ def showStartup():
     time.sleep(3)
 
 def findBTDevices():
-    while connected != True:
-        while found_devices != True:
+    found_devices = False
+    while found_devices != True:
+        with canvas(device) as draw:
+            draw.text((20,16), "Scanning For\nBT Devices", font=medium_font, fill=1, align="center")
+        devices = bluetooth.discover_devices(duration=10)
+        if devices:
+            response = waitForBTDeviceSelection(devices)
+            if response != "rescan":
+                server_address = response
+                found_devices = True
+        else:
+            print("No BT Devices Found")
             with canvas(device) as draw:
-                draw.text((20,16), "Scanning For\nBT Devices", font=medium_font, fill=1, align="center")
-            devices = bluetooth.discover_devices(duration=10)
-            if devices:
-                response = waitForBTDeviceSelection(devices)
-                if response != "rescan":
-                    server_address = response
-                    found_devices = True
-            else:
-                print("No BT Devices Found")
-                with canvas(device) as draw:
-                    draw.text((0, 32), "Re-scan BT Devices?", fill=1)
-                if waitForYNResponse() == False:
-                    exit(0)
+                draw.text((0, 32), "Re-scan BT Devices?", fill=1)
+            if waitForYNResponse() == False:
+                exit(0)
 
 def waitForBTDeviceSelection(devices):
     selection_mac = ""
@@ -146,7 +145,6 @@ def connectToBTDevice():
         print("Connecting to {} failed".format(server_address))
         with canvas(device) as draw:
             draw.text((4,8), "Connecting to\n{}\nFailed".format(server_address), font=medium_font, fill=1, align="center")
-            found_devices = False
             server_address = ""
         time.sleep(3)
 
@@ -179,9 +177,9 @@ def toneControlLoop():
 # Start "main" logic
 showStartup()
 
-findBTDevices()
-
-connectToBTDevice()
+while connected != True:
+    findBTDevices()
+    connectToBTDevice()
 
 try:
     toneControlLoop()
