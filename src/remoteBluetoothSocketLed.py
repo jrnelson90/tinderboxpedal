@@ -3,9 +3,19 @@ import time
 import bluetooth
 import subprocess
 
-subprocess.call(["sudo", "hciconfig", "hci0", "piscan"])
 led_gpio = [22, 27, 17, 4]
 server_port = 2
+
+# these are based on the wireshark captures when selecting presets via the app, 
+# the correct commands probably involve reading state, then changing individual bytes before send to amp
+cmdPreset1 = "01fe000053fe1a000000000000000000f00124000138000000f779"
+cmdPreset2 = "01fe000053fe1a000000000000000000f00123010138000001f779"
+cmdPreset3 = "01fe000053fe1a000000000000000000f00125020138000002f779"
+cmdPreset4 = "01fe000053fe1a000000000000000000f00120030138000003f779"
+toneCommands= [cmdPreset1, cmdPreset2, cmdPreset3, cmdPreset4]
+
+subprocess.call(["sudo", "hciconfig", "hci0", "piscan"])
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -26,7 +36,8 @@ try:
     while True:
         raw_command = client_sock.recv(1024)
         try:
-            command_num = int(raw_command)
+            command_hex = raw_command.hex()
+            command_num = toneCommands.index(command_hex) + 1
             print("Received \"{}\" from {}".format(command_num, address[0]))
             if command_num == 0:
                 exit()
