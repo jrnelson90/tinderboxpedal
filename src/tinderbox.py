@@ -230,7 +230,8 @@ def tone_control_loop(client_socket):
                 update_slot_on_screen(selected_slot)
 
 
-def keyboard_exit_handler():
+# noinspection PyUnusedLocal
+def keyboard_exit_handler(signal_received, frame):
     # Hard exit cleanup
     blank_screen()
     GPIO.cleanup()
