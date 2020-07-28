@@ -34,27 +34,30 @@ try:
         client_sock,address = server_sock.accept()
         print("Accepted connection from {}".format(address))
         current_tone = 0
-        raw_command = None
-        try:
-            raw_command = client_sock.recv(1024)
-        except:
-            print("Unexpected Error: ", sys_exc_info()[0])
-            server_sock.close()
-            client_sock.close()
-            if current_tone != 0:
-                GPIO.output(led_gpio[current_tone - 1], False)
-
-        if raw_command != None:        
-            command_hex = raw_command.hex()
-            command_num = toneCommands.index(command_hex) + 1
-            print("Received \"{}\" from {}".format(command_num, address[0]))
-            if command_num == 0:
-                exit()
-            if command_num >= 1 and command_num <= 4 and current_tone != command_num:
+        connected = True
+        while connected:
+            raw_command = None
+            try:
+                raw_command = client_sock.recv(1024)
+            except:
+                print("Unexpected Error: ", sys_exc_info()[0])
+                server_sock.close()
+                client_sock.close()
                 if current_tone != 0:
                     GPIO.output(led_gpio[current_tone - 1], False)
-                GPIO.output(led_gpio[command_num - 1], True)
-                current_tone = command_num
+                connected = False
+
+            if raw_command != None:        
+                command_hex = raw_command.hex()
+                command_num = toneCommands.index(command_hex) + 1
+                print("Received \"{}\" from {}".format(command_num, address[0]))
+                if command_num == 0:
+                    exit()
+                if command_num >= 1 and command_num <= 4 and current_tone != command_num:
+                    if current_tone != 0:
+                        GPIO.output(led_gpio[current_tone - 1], False)
+                    GPIO.output(led_gpio[command_num - 1], True)
+                    current_tone = command_num
 finally:
     server_sock.close()
     client_sock.close()
