@@ -6,13 +6,10 @@ from PIL import ImageFont
 import RPi.GPIO as GPIO
 import bluetooth
 
-# Set Connection and Tone Slot Defaults
-selected_slot = 0;
-server_port = 2;
-server_address = ""
-connected = False
+# Set Connection Port Default
+server_port = 2
 
-# these are based on the wireshark captures when selecting presets via the app, 
+# these are based on the wireshark captures when selecting presets via the app,
 # the correct commands probably involve reading state, then changing individual bytes before send to amp
 cmdPreset1 = "01fe000053fe1a000000000000000000f00124000138000000f779"
 cmdPreset2 = "01fe000053fe1a000000000000000000f00123010138000001f779"
@@ -33,6 +30,8 @@ GPIO.setup(BUTTON_3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BUTTON_4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # First define some constants to allow easy resizing of shapes.
+width =128
+height = 64
 padding = -2
 top = padding
 bottom = height-padding
@@ -44,8 +43,6 @@ logo_font = ImageFont.truetype('./Market_Deco.ttf', 24)
 large_font = ImageFont.truetype('./Market_Deco.ttf', 56)
 
 # Setup 128x64 I2C OLED Display:
-width = 128
-height = 64
 serial = i2c(port=1, address=0x3c)
 device = ssd1306(serial, width, height)
 
@@ -69,8 +66,8 @@ def findBTDevices():
         if devices:
             response = waitForBTDeviceSelection(devices)
             if response != "rescan":
-                server_address = response
                 found_devices = True
+                return response
         else:
             print("No BT Devices Found")
             with canvas(device) as draw:
@@ -131,30 +128,31 @@ def waitForYNResponse():
             response = True
     return (press == "yes")
 
-def connectToBTDevice():
+def connectToBTDevice(server_address):
     with canvas(device) as draw:
         draw.text((4,8), "Connecting to\n{}".format(server_address), font=medium_font, fill=1, align="center")
     try:
         client_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         client_sock.connect((server_address, server_port))
-        connected = True
         with canvas(device) as draw:
             draw.text((4,8), "Connecting to\n{}\nSucceeded".format(server_address), font=medium_font, fill=1, align="center")
         time.sleep(3)
+        return client_sock
     except:
         print("Connecting to {} failed".format(server_address))
         with canvas(device) as draw:
             draw.text((4,8), "Connecting to\n{}\nFailed".format(server_address), font=medium_font, fill=1, align="center")
-            server_address = ""
         time.sleep(3)
+        return None
 
-def updateSlotOnScreen():
+def updateSlotOnScreen(selected_slot):
     with canvas(device) as draw:
         draw.text((48, top+8), "{}".format(selected_slot), font=large_font, fill=1)
 
-def toneControlLoop():
+def toneControlLoop(client_sock):
     with canvas(device) as draw:
-        draw.text((4,8), "Select Initial\nTone Slot", font=medium_font, align="center")
+        draw.text((4,8), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
+    selected_slot = 0
     while True:
         new_press = 0
         if GPIO.input(BUTTON_1):
@@ -170,20 +168,21 @@ def toneControlLoop():
             msg = bytes.fromhex(toneCommands[new_press-1])
             client_sock.send(msg)
             # Update screen with new selection
-            updateSlotOnScreen()
+            updateSlotOnScreen(selected_slot)
             # Debounce pause
             time.sleep(.1)
 
 # Start "main" logic
 showStartup()
 
+connected = False
 while connected != True:
-    findBTDevices()
-    connectToBTDevice()
-
-try:
-    toneControlLoop()
-finally:
-    client_sock.close()
-    blank_screen()
-    GPIO.cleanup()
+    server_address = findBTDevices()
+    client_sock = connectToBTDevice(server_address)
+    if client_sock != None:
+        try:
+            toneControlLoop(client_sock)
+        finally:
+            client_sock.close()
+            blank_screen()
+            GPIO.cleanup()
