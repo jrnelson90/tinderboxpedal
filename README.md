@@ -7,4 +7,4 @@ BT "Universal Remote" Control Code for Digital Guitar Amps
 
 On client, edit `tinderbox.py` to match your GPIO mapping or OLED screen type before running.
 
-On demo server, edit `remoteBluetoothSocketLed.py` to match your LED GPIO mapping before running.
+On demo server, edit `demoLedServer.py` to match your LED GPIO mapping before running.
