@@ -153,12 +153,12 @@ def toneControlLoop(client_sock):
     with canvas(device) as draw:
         draw.text((10,20), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
     selected_slot = 0
-    multi_buttons_pressed_for = 0
+    multi_button_press = 0
     disconnect = False
     while disconnect != True:
         new_press = [False, False, False, False]
         if GPIO.input(BUTTON_1):
-            new_press[0] = True 
+            new_press[0] = True
         if GPIO.input(BUTTON_2):
             new_press[1] = True
         if GPIO.input(BUTTON_3):
@@ -171,19 +171,20 @@ def toneControlLoop(client_sock):
             client_sock.send(msg)
             # Update screen with new selection
             updateSlotOnScreen(selected_slot)
-            multi_buttons_pressed_for = 0
+            print("Sent \"{}\" to server".format(selected_slot)
+            multi_button_press = 0
             # Debounce pause
             time.sleep(.1)
-        elif new_press.count(True) == 2 and len(list(filter(lambda slot: slot == selected_slot, new_press))) = 1:
-            if multi_buttons_pressed_for = 5:
+        elif new_press.count(True) == 2 and len(list(filter(lambda slot: slot == selected_slot, new_press))) == 1:
+            print("Multi button press for {}".format(multi_buttons_pressed_for))
+            if multi_button_press == 5:
                 client_sock.close()
                 disconnect = True
             else:
                 multi_buttons_pressed_for += 0.1
                 time.sleep(.1)
-        else:
-            multi_buttons_pressed_for = 0
-
+        elif new_press.count(True) == 0:
+            multi_button_press = 0
 
 # Start "main" logic
 showStartup()
