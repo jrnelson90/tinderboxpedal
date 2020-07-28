@@ -6,7 +6,7 @@ import subprocess
 led_gpio = [22, 27, 17, 4]
 server_port = 2
 
-# these are based on the wireshark captures when selecting presets via the app, 
+# these are based on the wireshark captures when selecting presets via the app,
 # the correct commands probably involve reading state, then changing individual bytes before send to amp
 cmdPreset1 = "01fe000053fe1a000000000000000000f00124000138000000f779"
 cmdPreset2 = "01fe000053fe1a000000000000000000f00123010138000001f779"
@@ -18,7 +18,6 @@ subprocess.call(["sudo", "hciconfig", "hci0", "piscan"])
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
 for led in led_gpio:
     GPIO.setup(led, GPIO.OUT)
@@ -26,6 +25,7 @@ for led in led_gpio:
 
 try:
     while True:
+        server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         server_sock.bind(("", server_port))
         server_sock.listen(1)
 
@@ -40,14 +40,14 @@ try:
             try:
                 raw_command = client_sock.recv(1024)
             except:
-                print("Unexpected Error: ", sys_exc_info()[0])
+                print("Unexpected Connection Error")
                 server_sock.close()
                 client_sock.close()
                 if current_tone != 0:
                     GPIO.output(led_gpio[current_tone - 1], False)
                 connected = False
 
-            if raw_command != None:        
+            if raw_command != None:
                 command_hex = raw_command.hex()
                 command_num = toneCommands.index(command_hex) + 1
                 print("Received \"{}\" from {}".format(command_num, address[0]))
