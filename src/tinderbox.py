@@ -258,7 +258,7 @@ def keyboard_exit_handler(signal_received, frame):
     # Hard exit cleanup
     blank_screen()
     GPIO.cleanup()
-    print('SIGINT or CTRL-C detected. Exiting TinderBox.')
+    print('\nSIGINT or CTRL-C detected. Exiting TinderBox.')
 
     # TODO: refactor this socket to be passed or global
     # client_sock.close()
