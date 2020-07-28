@@ -1,12 +1,12 @@
-import time
+import bluetooth
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306
 from PIL import ImageFont
 import RPi.GPIO as GPIO
-import bluetooth
 from signal import signal, SIGINT
 from sys import exit
+import time
 
 # Set Connection Port Default
 SERVER_PORT = 2
