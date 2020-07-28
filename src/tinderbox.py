@@ -8,6 +8,7 @@ from signal import signal, SIGINT
 from sys import exit
 import time
 
+VERSION = "0.3"
 # Set Connection Port Default
 SERVER_PORT = 2
 
@@ -64,8 +65,10 @@ def show_startup_splash():
     print("Showing Startup Splash")
     with canvas(oled_screen) as draw:
         name_msg = "TinderBox"
+        version_msg = "v{}".format(VERSION)
         draw.text(center_text(name_msg, logo_font), name_msg, font=logo_font, fill=1)
-        draw.text((56, 50), "v0.3", fill=1)
+        draw.text((center_text(version_msg, logo_font)[0], center_text(name_msg, logo_font)[1] + 28),
+                  version_msg, fill=1)
     time.sleep(3)
 
 
@@ -94,9 +97,9 @@ def find_bt_devices():
 def bt_device_selection(devices):
     selection_mac = ""
     response = False
+    first_loop = True
     num_of_devices = len(devices)
     selected_device = 0
-    first_loop = True
     menu_top = 0
     menu_bottom = 3
     print("Found {} BT Devices".format(num_of_devices))
