@@ -31,6 +31,7 @@ GPIO.setup(BUTTON_1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BUTTON_2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BUTTON_3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BUTTON_4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+print("GPIO Setup Complete")
 
 # First define some constants to allow easy resizing of shapes.
 width =128
@@ -44,17 +45,21 @@ font = ImageFont.load_default()
 medium_font = ImageFont.truetype('./roboto/Roboto-Regular.ttf', 14)
 logo_font = ImageFont.truetype('./Market_Deco.ttf', 24)
 large_font = ImageFont.truetype('./Market_Deco.ttf', 56)
+print("Font Setup Complete")
 
 # Setup 128x64 I2C OLED Display:
 serial = i2c(port=1, address=0x3c)
 device = ssd1306(serial, width, height)
+print("I2C OLED Setup Complete")
 
 # Define script functions
 def blank_screen():
+    print("Blanking OLED Screen")
     with canvas(device) as draw:
         draw.rectangle((0,0,width,height), outline=0, fill=0)
 
 def showStartup():
+    print("Showing Startup Splash")
     with canvas(device) as draw:
         draw.text((0, 20), "TinderBox", font=logo_font, fill=1)
         draw.text((56, 50), "v0.2", fill=1)
@@ -65,16 +70,19 @@ def findBTDevices():
     while found_devices != True:
         with canvas(device) as draw:
             draw.text((20,16), "Scanning For\nBT Devices", font=medium_font, fill=1, align="center")
+        print("Scanning For BT Devices")
         devices = bluetooth.discover_devices(duration=10)
         if devices:
             response = waitForBTDeviceSelection(devices)
             if response != "rescan":
                 found_devices = True
                 return response
+            else:
+                print("Rescanning for BT Devices")
         else:
             print("No BT Devices Found")
             with canvas(device) as draw:
-                draw.text((0, 32), "Re-scan BT Devices?", fill=1)
+                draw.text((0, 20), "Re-scan BT Devices?", font=medium_font, fill=1, align="center")
             if waitForYNResponse() == False:
                 exit(0)
 
@@ -84,18 +92,25 @@ def waitForBTDeviceSelection(devices):
     num_of_devices = len(devices)
     selected_device = 0
     first_loop = True
+    print("Found {} BT Devices".format(num_of_devices))
+    for d in devices:
+        print(d)
     while response != True:
         nav_press = False
         if GPIO.input(BUTTON_1) and selected_device != 0:
+            print("Device Selection Nav Up Pressed - Button 1")
             selected_device -= 1
             nav_press = True
         if GPIO.input(BUTTON_3) and selected_device != (num_of_devices - 1):
+            print("Device Selection Nav Down Pressed - Button 3")
             selected_device += 1
             nav_press = True
         if GPIO.input(BUTTON_4):
+            print("Device Selection Confirm Pressed - Button 4")
             selection_mac = devices[selected_device]
             response = True
         if GPIO.input(BUTTON_2):
+            print("Device Selection Rescan Pressed - Button 2")
             selection_mac = "rescan"
             response = True
         if nav_press == True or first_loop == True:
@@ -112,7 +127,6 @@ def displayBTDevicesFound(devices, selected_device):
     with canvas(device) as draw:
         draw.text((0,0), "  Found {} Devices:".format(num_of_devices), fill=1)
         for i, d in enumerate(devices, start=0):
-            print(d)
             if i == selected_device:
                 draw.text((0, list_space), "->{}".format(d), fill=1)
             else:
@@ -132,11 +146,13 @@ def waitForYNResponse():
     return (press == "yes")
 
 def connectToBTDevice(server_address):
+    print("Connecting to {}".format(server_address))
     with canvas(device) as draw:
         draw.text((4,8), "Connecting to\n{}".format(server_address), font=medium_font, fill=1, align="center")
     try:
         client_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         client_sock.connect((server_address, server_port))
+        print("Connecting to {} succeeded".format(server_address))
         with canvas(device) as draw:
             draw.text((4,8), "Connecting to\n{}\nSucceeded".format(server_address), font=medium_font, fill=1, align="center")
         time.sleep(3)
