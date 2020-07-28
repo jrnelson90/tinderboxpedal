@@ -217,7 +217,13 @@ def tone_control_loop(client_socket):
                 print(e)
                 disconnect = True
         elif new_press.count(True) == 2:
-            if multi_button_press >= 5:
+            if multi_button_press < 6 and multi_button_press <= 3:
+                with canvas(device) as draw:
+                    display_secs = 6 - round(multi_button_press, 1)
+                    draw.text((8, 16), "Disconnecting from\nBT Device in {}".format(display_secs), font=medium_font, fill=1, align="center")
+                print("Disconnected from server")
+                time.sleep(3)
+            if multi_button_press >= 6:
                 client_socket.close()
                 disconnect = True
                 with canvas(device) as draw:
