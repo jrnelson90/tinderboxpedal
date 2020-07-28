@@ -24,18 +24,27 @@ for led in led_gpio:
     GPIO.setup(led, GPIO.OUT)
     GPIO.output(led, False)
 
-server_sock.bind(("", server_port))
-server_sock.listen(1)
-
-print("Listening on BT port {}".format(server_port))
-
-client_sock,address = server_sock.accept()
-print("Accepted connection from {}".format(address))
-current_tone = 0
 try:
     while True:
-        raw_command = client_sock.recv(1024)
+        server_sock.bind(("", server_port))
+        server_sock.listen(1)
+
+        print("Listening on BT port {}".format(server_port))
+
+        client_sock,address = server_sock.accept()
+        print("Accepted connection from {}".format(address))
+        current_tone = 0
+        raw_command = None
         try:
+            raw_command = client_sock.recv(1024)
+        except:
+            print("Unexpected Error: ", sys_exc_info()[0])
+            server_sock.close()
+            client_sock.close()
+            if current_tone != 0:
+                GPIO.output(led_gpio[current_tone - 1], False)
+
+        if raw_command != None:        
             command_hex = raw_command.hex()
             command_num = toneCommands.index(command_hex) + 1
             print("Received \"{}\" from {}".format(command_num, address[0]))
@@ -46,13 +55,6 @@ try:
                     GPIO.output(led_gpio[current_tone - 1], False)
                 GPIO.output(led_gpio[command_num - 1], True)
                 current_tone = command_num
-        except:
-            print("Unexpected Error: ", sys_exc_info()[0])
-            server_sock.close()
-            client_sock.close()
-            if current_tone != 0:
-                GPIO.output(led_gpio[current_tone - 1], False)
-            GPIO.cleanup()
 finally:
     server_sock.close()
     client_sock.close()

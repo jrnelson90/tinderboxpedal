@@ -236,6 +236,7 @@ if __name__ == '__main__':
 
 showStartup()
 
+client_sock = None
 try:
     while True:
         server_address = findBTDevices()
@@ -243,5 +244,5 @@ try:
         if client_sock != None:
             toneControlLoop(client_sock)
 finally:
-    client_sock.close()
-
+    if client_sock != None:
+        client_sock.close()
