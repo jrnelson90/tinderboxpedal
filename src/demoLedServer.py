@@ -1,6 +1,8 @@
 import bluetooth
 import RPi.GPIO as GPIO
+from signal import signal, SIGINT
 import subprocess
+from sys import exit
 
 LED_GPIO_LIST = [22, 27, 17, 4]
 SERVER_PORT = 2
@@ -24,6 +26,27 @@ for led in LED_GPIO_LIST:
 server_sock = None
 client_sock = None
 current_tone = 0
+
+
+# noinspection PyUnusedLocal
+def keyboard_exit_handler(signal_received, frame):
+    # Hard exit cleanup
+    print('SIGINT or CTRL-C detected. Exiting TinderBox.')
+    if server_sock is not None:
+        server_sock.close()
+    if client_sock is not None:
+        client_sock.close()
+    if current_tone != 0:
+        GPIO.output(LED_GPIO_LIST[current_tone - 1], False)
+    GPIO.cleanup()
+
+    exit(0)
+
+
+# Start "main" logic
+if __name__ == '__main__':
+    # Tell Python to run the handler() function when Ctrl+C (SIGINT) is recieved
+    signal(SIGINT, keyboard_exit_handler)
 
 try:
     while True:
