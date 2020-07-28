@@ -95,25 +95,25 @@ def bt_device_selection(devices):
     while not response:
         nav_press = False
         if GPIO.input(BUTTON_1) and selected_device != 0:
-            print("Device Selection Nav Up Pressed - Button 1")
+            print("Device Selection Button 1 Pressed - Device Menu Nav Up")
             selected_device -= 1
             nav_press = True
             if menu_top != 0 and menu_top > selected_device:
                 menu_bottom -= 1
                 menu_top -= 1
         if GPIO.input(BUTTON_3) and selected_device != (num_of_devices - 1):
-            print("Device Selection Nav Down Pressed - Button 3")
+            print("Device Selection Button 3 Pressed - Device Menu Nav Down")
             selected_device += 1
             nav_press = True
             if menu_bottom != num_of_devices - 1 and menu_bottom < selected_device:
                 menu_bottom += 1
                 menu_top += 1
         if GPIO.input(BUTTON_4):
-            print("Device Selection Confirm Pressed - Button 4")
+            print("Device Selection Button 4 Pressed - Device Menu Confirm Selection")
             selection_mac = devices[selected_device]
             response = True
         if GPIO.input(BUTTON_2):
-            print("Device Selection Rescan Pressed - Button 2")
+            print("Device Selection Button 2 Pressed - Device Menu Rescan Devices")
             selection_mac = "rescan"
             response = True
         if nav_press or first_loop:
@@ -230,8 +230,7 @@ def tone_control_loop(client_socket):
                 update_slot_on_screen(selected_slot)
 
 
-# Start "main" logic
-def handler(signal_received, frame):
+def keyboard_exit_handler():
     # Hard exit cleanup
     blank_screen()
     GPIO.cleanup()
@@ -243,9 +242,10 @@ def handler(signal_received, frame):
     exit(0)
 
 
+# Start "main" logic
 if __name__ == '__main__':
     # Tell Python to run the handler() function when Ctrl+C (SIGINT) is recieved
-    signal(SIGINT, handler)
+    signal(SIGINT, keyboard_exit_handler)
 
 show_startup_splash()
 
