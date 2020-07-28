@@ -64,15 +64,14 @@ def center_text(msg, msg_font):
 
 def show_startup_splash():
     print("Showing Startup Splash")
-    regulator = framerate_regulator(fps=10)
-    banana = Image.open("./flame.gif")
-    size = [min(*oled_screen.size)] * 2
-    posn = ((oled_screen.width - size[0]) // 2, oled_screen.height - size[1])
+    regulator = framerate_regulator(fps=24)
+    flame_animation = Image.open("./flame.gif")
+    size = oled_screen.size
 
-    for frame in ImageSequence.Iterator(banana):
+    for frame in ImageSequence.Iterator(flame_animation):
         with regulator:
             background = Image.new("RGB", oled_screen.size, "white")
-            background.paste(frame.resize(size, resample=Image.LANCZOS), posn)
+            background.paste(frame.resize(size, resample=Image.LANCZOS), (0, 0))
             oled_screen.display(background.convert(oled_screen.mode))
 
     with canvas(oled_screen) as draw:
