@@ -70,7 +70,7 @@ def show_startup_splash():
 
     for frame in ImageSequence.Iterator(flame_animation):
         with regulator:
-            background = Image.new("RGB", oled_screen.size, "white")
+            background = Image.new("RGB", oled_screen.size, "black")
             background.paste(frame.resize(size, resample=Image.LANCZOS), (0, 0))
             oled_screen.display(background.convert(oled_screen.mode))
 
