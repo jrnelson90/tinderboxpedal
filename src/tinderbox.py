@@ -211,13 +211,11 @@ def tone_control_loop(client_socket):
                 print(e)
                 disconnect = True
         elif new_press.count(True) == 2:
-            if multi_button_press < 6 and multi_button_press <= 3:
+            if multi_button_press < 6 and multi_button_press >= 3:
                 with canvas(oled_screen) as draw:
-                    display_secs = 6 - round(multi_button_press, 1)
+                    display_secs = 6 - round(multi_button_press)
                     draw.text((8, 8), "Disconnecting from\nBT Device\nin {}".format(display_secs), font=medium_font,
                               fill=1, align="center")
-                print("Disconnected from server")
-                time.sleep(3)
             if multi_button_press >= 6:
                 client_socket.close()
                 disconnect = True
@@ -230,6 +228,8 @@ def tone_control_loop(client_socket):
                 time.sleep(.1)
         elif new_press.count(True) == 0:
             multi_button_press = 0
+            if selected_slot != 0:
+                update_slot_on_screen(selected_slot)
 
 
 # Start "main" logic
