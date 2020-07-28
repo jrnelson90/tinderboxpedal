@@ -172,7 +172,7 @@ def connect_to_bt_device(server_addr):
         print("Connecting to {} succeeded".format(server_addr))
         with canvas(oled_screen) as draw:
             connected_msg = "Connecting to\n{}\nSucceeded".format(server_addr)
-            draw.text((connected_msg, medium_font), connected_msg, font=medium_font, fill=1, align="center")
+            draw.text(center_text(connected_msg, medium_font), connected_msg, font=medium_font, fill=1, align="center")
         time.sleep(3)
         return client_socket
     except OSError as e:
