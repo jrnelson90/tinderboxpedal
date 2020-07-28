@@ -151,32 +151,44 @@ def updateSlotOnScreen(selected_slot):
 
 def toneControlLoop(client_sock):
     with canvas(device) as draw:
-        draw.text((4,8), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
+        draw.text((10,20), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
     selected_slot = 0
-    while True:
-        new_press = 0
+    multi_buttons_pressed_for = 0
+    disconnect = False
+    while disconnect != True:
+        new_press = [False, False, False, False]
         if GPIO.input(BUTTON_1):
-            new_press = 1
+            new_press[0] = True 
         if GPIO.input(BUTTON_2):
-            new_press = 2
+            new_press[1] = True
         if GPIO.input(BUTTON_3):
-            new_press = 3
+            new_press[2] = True
         if GPIO.input(BUTTON_4):
-            new_press = 4
-        if new_press != 0 and new_press != selected_slot:
-            selected_slot = new_press
-            msg = bytes.fromhex(toneCommands[new_press-1])
+            new_press[3] = True
+        if new_press.count(True) == 1 and new_press.index(True) + 1 != selected_slot:
+            selected_slot = new_press.index(True) + 1
+            msg = bytes.fromhex(toneCommands[selected_slot-1])
             client_sock.send(msg)
             # Update screen with new selection
             updateSlotOnScreen(selected_slot)
+            multi_buttons_pressed_for = 0
             # Debounce pause
             time.sleep(.1)
+        elif new_press.count(True) == 2 and len(list(filter(lambda slot: slot == selected_slot, new_press))) = 1:
+            if multi_buttons_pressed_for = 5:
+                client_sock.close()
+                disconnect = True
+            else:
+                multi_buttons_pressed_for += 0.1
+                time.sleep(.1)
+        else:
+            multi_buttons_pressed_for = 0
+
 
 # Start "main" logic
 showStartup()
 
-connected = False
-while connected != True:
+while True:
     server_address = findBTDevices()
     client_sock = connectToBTDevice(server_address)
     if client_sock != None:
