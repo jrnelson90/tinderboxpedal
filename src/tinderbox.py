@@ -1,8 +1,9 @@
 import bluetooth
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
+from luma.core.sprite_system import framerate_regulator
 from luma.oled.device import ssd1306
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageSequence
 import RPi.GPIO as GPIO
 from signal import signal, SIGINT
 from sys import exit
@@ -63,6 +64,17 @@ def center_text(msg, msg_font):
 
 def show_startup_splash():
     print("Showing Startup Splash")
+    regulator = framerate_regulator(fps=10)
+    banana = Image.open("./flame.gif")
+    size = [min(*oled_screen.size)] * 2
+    posn = ((oled_screen.width - size[0]) // 2, oled_screen.height - size[1])
+
+    for frame in ImageSequence.Iterator(banana):
+        with regulator:
+            background = Image.new("RGB", oled_screen.size, "white")
+            background.paste(frame.resize(size, resample=Image.LANCZOS), posn)
+            oled_screen.display(background.convert(oled_screen.mode))
+
     with canvas(oled_screen) as draw:
         name_msg = "TinderBox"
         version_msg = "v{}".format(VERSION)
