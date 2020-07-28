@@ -214,7 +214,7 @@ def tone_control_loop(client_socket):
             if multi_button_press < 6 and multi_button_press <= 3:
                 with canvas(oled_screen) as draw:
                     display_secs = 6 - round(multi_button_press, 1)
-                    draw.text((8, 16), "Disconnecting from\nBT Device in {}".format(display_secs), font=medium_font,
+                    draw.text((8, 8), "Disconnecting from\nBT Device\nin {}".format(display_secs), font=medium_font,
                               fill=1, align="center")
                 print("Disconnected from server")
                 time.sleep(3)
