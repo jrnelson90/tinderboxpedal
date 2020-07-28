@@ -31,7 +31,7 @@ current_tone = 0
 # noinspection PyUnusedLocal
 def keyboard_exit_handler(signal_received, frame):
     # Hard exit cleanup
-    print('SIGINT or CTRL-C detected. Exiting TinderBox.')
+    print('SIGINT or CTRL-C detected. Exiting DemoLEDServer.')
     if server_sock is not None:
         server_sock.close()
     if client_sock is not None:
