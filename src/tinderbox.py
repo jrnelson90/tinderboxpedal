@@ -141,12 +141,15 @@ def display_bt_devices_found(devices, selected_device, menu_top, menu_bottom):
     num_of_devices = len(devices)
     list_space = 12
     with canvas(oled_screen) as draw:
-        draw.text((0, 0), "  Found {} Devices:".format(num_of_devices), fill=1)
+        found_msg = "Found {} Devices".format(num_of_devices)
+        draw.text((center_text(found_msg, font)[0], 0), found_msg, fill=1)
         for i, d in enumerate(devices[menu_top:(menu_bottom + 1)], start=menu_top):
             if i == selected_device:
-                draw.text((0, list_space), "->{}".format(d), fill=1)
+                selected_msg = "->{}".format(d)
+                draw.text((center_text(selected_msg, font)[0], list_space), selected_msg, fill=1)
             else:
-                draw.text((0, list_space), "  {}".format(d), fill=1)
+                unselected_msg = "  {}".format(d)
+                draw.text((center_text(unselected_msg, font)[0], list_space), unselected_msg, fill=1)
             list_space += 12
 
 
