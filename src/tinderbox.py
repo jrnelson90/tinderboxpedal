@@ -64,15 +64,12 @@ def center_text(msg, msg_font):
 
 def show_startup_splash():
     print("Showing Startup Splash")
-    regulator = framerate_regulator(fps=24)
-    flame_animation = Image.open("./flame.gif")
-    size = oled_screen.size
 
+    regulator = framerate_regulator(fps=0)
+    flame_animation = Image.open("./flame.gif")
     for frame in ImageSequence.Iterator(flame_animation):
         with regulator:
-            background = Image.new("RGB", oled_screen.size, "black")
-            background.paste(frame.resize(size, resample=Image.LANCZOS), (0, 0))
-            oled_screen.display(background.convert(oled_screen.mode))
+            oled_screen.display(frame.resize(oled_screen.size, resample=Image.LANCZOS))
 
     with canvas(oled_screen) as draw:
         name_msg = "TinderBox"
