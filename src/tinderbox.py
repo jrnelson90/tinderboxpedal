@@ -92,6 +92,9 @@ def waitForBTDeviceSelection(devices):
     num_of_devices = len(devices)
     selected_device = 0
     first_loop = True
+    menu_top = 0
+    menu_bottom = 3
+    menu_size = 4
     print("Found {} BT Devices".format(num_of_devices))
     for d in devices:
         print(d)
@@ -101,10 +104,16 @@ def waitForBTDeviceSelection(devices):
             print("Device Selection Nav Up Pressed - Button 1")
             selected_device -= 1
             nav_press = True
+            if menu_bottom != 0 and menu_bottom > selected_device:
+                menu_bottom -= 1
+                menu_top -= 1
         if GPIO.input(BUTTON_3) and selected_device != (num_of_devices - 1):
             print("Device Selection Nav Down Pressed - Button 3")
             selected_device += 1
             nav_press = True
+            if menu_top != num_of_devices-1 and menu_top < selected_device:
+                menu_bottom += 1
+                menu_top +=1
         if GPIO.input(BUTTON_4):
             print("Device Selection Confirm Pressed - Button 4")
             selection_mac = devices[selected_device]
@@ -116,17 +125,17 @@ def waitForBTDeviceSelection(devices):
         if nav_press == True or first_loop == True:
             if first_loop == True:
                 first_loop = False
-            displayBTDevicesFound(devices, selected_device)
+            displayBTDevicesFound(devices, selected_device, menu_top, menu_bottom)
             # Debounce pause
             time.sleep(.1)
     return selection_mac
 
-def displayBTDevicesFound(devices, selected_device):
+def displayBTDevicesFound(devices, selected_device, menu_top, menu_bottom):
     num_of_devices = len(devices)
     list_space = 12
     with canvas(device) as draw:
         draw.text((0,0), "  Found {} Devices:".format(num_of_devices), fill=1)
-        for i, d in enumerate(devices, start=0):
+        for i, d in enumerate(devices[menu_bottom, menu_top + 1], start=0):
             if i == selected_device:
                 draw.text((0, list_space), "->{}".format(d), fill=1)
             else:
