@@ -1,4 +1,5 @@
 import time
+import traceback
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306
@@ -151,7 +152,7 @@ def updateSlotOnScreen(selected_slot):
 
 def toneControlLoop(client_sock):
     with canvas(device) as draw:
-        draw.text((10,20), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
+        draw.text((24, 16), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
     selected_slot = 0
     multi_button_press = 0
     disconnect = False
@@ -165,37 +166,40 @@ def toneControlLoop(client_sock):
             new_press[2] = True
         if GPIO.input(BUTTON_4):
             new_press[3] = True
+
         if new_press.count(True) == 1 and new_press.index(True) + 1 != selected_slot:
             selected_slot = new_press.index(True) + 1
             msg = bytes.fromhex(toneCommands[selected_slot-1])
             client_sock.send(msg)
             # Update screen with new selection
             updateSlotOnScreen(selected_slot)
-            print("Sent \"{}\" to server".format(selected_slot)
+            print("Sent \"{}\" to server".format(selected_slot))
             multi_button_press = 0
             # Debounce pause
             time.sleep(.1)
-        elif new_press.count(True) == 2 and len(list(filter(lambda slot: slot == selected_slot, new_press))) == 1:
-            print("Multi button press for {}".format(multi_buttons_pressed_for))
-            if multi_button_press == 5:
+        elif new_press.count(True) == 2:
+            if multi_button_press >= 5:
                 client_sock.close()
                 disconnect = True
+                with canvas(device) as draw:
+                    draw.text((8, 16), "Disconnected from\nBT Device", font=medium_font, fill=1, align="center")
+                print("Disconnected from server")
+                time.sleep(3)
             else:
-                multi_buttons_pressed_for += 0.1
+                multi_button_press += 0.1
                 time.sleep(.1)
         elif new_press.count(True) == 0:
             multi_button_press = 0
 
 # Start "main" logic
 showStartup()
-
-while True:
-    server_address = findBTDevices()
-    client_sock = connectToBTDevice(server_address)
-    if client_sock != None:
-        try:
+try:
+    while True:
+        server_address = findBTDevices()
+        client_sock = connectToBTDevice(server_address)
+        if client_sock != None:
             toneControlLoop(client_sock)
-        finally:
-            client_sock.close()
-            blank_screen()
-            GPIO.cleanup()
+finally:
+    client_sock.close()
+    blank_screen()
+    GPIO.cleanup()
