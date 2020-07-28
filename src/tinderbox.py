@@ -62,7 +62,7 @@ def showStartup():
     print("Showing Startup Splash")
     with canvas(device) as draw:
         draw.text((0, 20), "TinderBox", font=logo_font, fill=1)
-        draw.text((56, 50), "v0.2", fill=1)
+        draw.text((56, 50), "v0.3", fill=1)
     time.sleep(3)
 
 def findBTDevices():
@@ -104,14 +104,14 @@ def waitForBTDeviceSelection(devices):
             print("Device Selection Nav Up Pressed - Button 1")
             selected_device -= 1
             nav_press = True
-            if menu_bottom != 0 and menu_bottom > selected_device:
+            if menu_top != 0 and menu_top > selected_device:
                 menu_bottom -= 1
                 menu_top -= 1
         if GPIO.input(BUTTON_3) and selected_device != (num_of_devices - 1):
             print("Device Selection Nav Down Pressed - Button 3")
             selected_device += 1
             nav_press = True
-            if menu_top != num_of_devices-1 and menu_top < selected_device:
+            if menu_bottom != num_of_devices-1 and menu_bottom < selected_device:
                 menu_bottom += 1
                 menu_top +=1
         if GPIO.input(BUTTON_4):
@@ -135,7 +135,7 @@ def displayBTDevicesFound(devices, selected_device, menu_top, menu_bottom):
     list_space = 12
     with canvas(device) as draw:
         draw.text((0,0), "  Found {} Devices:".format(num_of_devices), fill=1)
-        for i, d in enumerate(devices[menu_bottom:(menu_top + 1)], start=0):
+        for i, d in enumerate(devices[menu_top:(menu_bottom + 1)], start=menu_top):
             if i == selected_device:
                 draw.text((0, list_space), "->{}".format(d), fill=1)
             else:
