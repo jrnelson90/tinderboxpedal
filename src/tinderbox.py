@@ -69,7 +69,7 @@ def show_startup_splash():
     flame_animation = Image.open("./flame.gif")
     for frame in ImageSequence.Iterator(flame_animation):
         with regulator:
-            oled_screen.display(frame.resize(oled_screen.size, resample=Image.LANCZOS))
+            oled_screen.display(frame.convert(oled_screen.mode).resize(oled_screen.size, resample=Image.LANCZOS))
 
     with canvas(oled_screen) as draw:
         name_msg = "TinderBox"
