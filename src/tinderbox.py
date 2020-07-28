@@ -67,8 +67,7 @@ def show_startup_splash():
         name_msg = "TinderBox"
         version_msg = "v{}".format(VERSION)
         draw.text(center_text(name_msg, logo_font), name_msg, font=logo_font, fill=1)
-        draw.text((center_text(version_msg, logo_font)[0], center_text(name_msg, logo_font)[1] + 28),
-                  version_msg, fill=1)
+        draw.text((center_text(version_msg, font)[0], center_text(name_msg, logo_font)[1] + 28), version_msg, fill=1)
     time.sleep(3)
 
 
