@@ -135,7 +135,8 @@ def displayBTDevicesFound(devices, selected_device, menu_top, menu_bottom):
     list_space = 12
     with canvas(device) as draw:
         draw.text((0,0), "  Found {} Devices:".format(num_of_devices), fill=1)
-        for i, d in enumerate(devices[menu_bottom, menu_top + 1], start=0):
+        device_list = [device[0] for device in devices]
+        for i, d in enumerate(device_list[menu_bottom, menu_top + 1], start=0):
             if i == selected_device:
                 draw.text((0, list_space), "->{}".format(d), fill=1)
             else:
