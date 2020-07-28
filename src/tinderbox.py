@@ -6,6 +6,8 @@ from luma.oled.device import ssd1306
 from PIL import ImageFont
 import RPi.GPIO as GPIO
 import bluetooth
+from signal import signal, SIGINT
+from sys import exit
 
 # Set Connection Port Default
 server_port = 2
@@ -192,7 +194,23 @@ def toneControlLoop(client_sock):
             multi_button_press = 0
 
 # Start "main" logic
+def handler(signal_received, frame):
+    # Handle any cleanup here
+    blank_screen()
+    GPIO.cleanup()
+    print('SIGINT or CTRL-C detected. Exiting TinderBox.')
+    
+    #TODO: refactor this socket to be passed or global
+    #client_sock.close()
+
+    exit(0)
+
+if __name__ == '__main__':
+    # Tell Python to run the handler() function when SIGINT is recieved
+    signal(SIGINT, handler)
+
 showStartup()
+
 try:
     while True:
         server_address = findBTDevices()
@@ -201,5 +219,4 @@ try:
             toneControlLoop(client_sock)
 finally:
     client_sock.close()
-    blank_screen()
-    GPIO.cleanup()
+
