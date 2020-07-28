@@ -2,7 +2,7 @@ import bluetooth
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306
-from PIL import ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import RPi.GPIO as GPIO
 from signal import signal, SIGINT
 from sys import exit
@@ -53,10 +53,18 @@ def blank_screen():
         draw.rectangle((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), outline=0, fill=0)
 
 
+def center_text(msg, msg_font):
+    image = Image.new("RGBA", (SCREEN_WIDTH, SCREEN_HEIGHT), "black")
+    draw = ImageDraw.Draw(image)
+    text_w, text_h = draw.textsize(msg, font=msg_font)
+    return (SCREEN_WIDTH - text_w) / 2, (SCREEN_HEIGHT - text_h) / 2
+
+
 def show_startup_splash():
     print("Showing Startup Splash")
     with canvas(oled_screen) as draw:
-        draw.text((0, 20), "TinderBox", font=logo_font, fill=1)
+        name_msg = "TinderBox"
+        draw.text(center_text(name_msg, logo_font), name_msg, font=logo_font, fill=1)
         draw.text((56, 50), "v0.3", fill=1)
     time.sleep(3)
 
@@ -64,7 +72,8 @@ def show_startup_splash():
 def find_bt_devices():
     while True:
         with canvas(oled_screen) as draw:
-            draw.text((20, 16), "Scanning For\nBT Devices", font=medium_font, fill=1, align="center")
+            scan_msg = "Scanning For\nBT Devices"
+            draw.text(center_text(scan_msg, medium_font), scan_msg, font=medium_font, fill=1, align="center")
         print("Scanning For BT Devices")
         devices = bluetooth.discover_devices(duration=10)
         if devices:
@@ -76,7 +85,8 @@ def find_bt_devices():
         else:
             print("No BT Devices Found")
             with canvas(oled_screen) as draw:
-                draw.text((0, 20), "Re-scan BT Devices?", font=medium_font, fill=1, align="center")
+                rescan_msg = "Re-scan BT Devices?"
+                draw.text(center_text(rescan_msg, medium_font), rescan_msg, font=medium_font, fill=1, align="center")
             if not wait_for_yn_response():
                 exit(0)
 
@@ -154,21 +164,23 @@ def wait_for_yn_response():
 def connect_to_bt_device(server_addr):
     print("Connecting to {}".format(server_addr))
     with canvas(oled_screen) as draw:
-        draw.text((4, 8), "Connecting to\n{}".format(server_addr), font=medium_font, fill=1, align="center")
+        connecting_msg = "Connecting to\n{}".format(server_addr)
+        draw.text(center_text(connecting_msg, medium_font), connecting_msg, font=medium_font, fill=1, align="center")
     try:
         client_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         client_socket.connect((server_addr, SERVER_PORT))
         print("Connecting to {} succeeded".format(server_addr))
         with canvas(oled_screen) as draw:
-            draw.text((4, 8), "Connecting to\n{}\nSucceeded".format(server_addr), font=medium_font, fill=1,
-                      align="center")
+            connected_msg = "Connecting to\n{}\nSucceeded".format(server_addr)
+            draw.text((connected_msg, medium_font), connected_msg, font=medium_font, fill=1, align="center")
         time.sleep(3)
         return client_socket
     except OSError as e:
         print(e)
         print("Connecting to {} failed".format(server_addr))
         with canvas(oled_screen) as draw:
-            draw.text((4, 8), "Connecting to\n{}\nFailed".format(server_addr), font=medium_font, fill=1,
+            connect_failed_msg = "Connecting to\n{}\nFailed".format(server_addr)
+            draw.text(center_text(connect_failed_msg, medium_font), connect_failed_msg, font=medium_font, fill=1,
                       align="center")
         time.sleep(3)
         return None
@@ -176,12 +188,14 @@ def connect_to_bt_device(server_addr):
 
 def update_slot_on_screen(selected_slot):
     with canvas(oled_screen) as draw:
-        draw.text((48, 8), "{}".format(selected_slot), font=large_font, fill=1)
+        slot_msg = "{}".format(selected_slot)
+        draw.text(center_text(slot_msg, large_font), slot_msg, font=large_font, fill=1)
 
 
 def tone_control_loop(client_socket):
     with canvas(oled_screen) as draw:
-        draw.text((24, 16), "Select Initial\nTone Slot", font=medium_font, align="center", fill=1)
+        select_slot_msg = "Select Initial\nTone Slot"
+        draw.text(center_text(select_slot_msg, medium_font), select_slot_msg, font=medium_font, align="center", fill=1)
     selected_slot = 0
     multi_button_press = 0
     disconnect = False
@@ -213,12 +227,16 @@ def tone_control_loop(client_socket):
         elif new_press.count(True) == 2:
             if 5 > multi_button_press >= 2.5:
                 with canvas(oled_screen) as draw:
-                    draw.text((8, 16), "Disconnecting from\nBT Device...", font=medium_font, fill=1, align="center")
+                    disconnecting_msg = "Disconnecting from\nBT Device..."
+                    draw.text(center_text(disconnecting_msg, medium_font), disconnecting_msg, font=medium_font, fill=1,
+                              align="center")
             if multi_button_press >= 5:
                 client_socket.close()
                 disconnect = True
                 with canvas(oled_screen) as draw:
-                    draw.text((8, 16), "Disconnected from\nBT Device", font=medium_font, fill=1, align="center")
+                    disconnected_msg = "Disconnected from\nBT Device"
+                    draw.text(center_text(disconnected_msg, medium_font), disconnected_msg, font=medium_font, fill=1,
+                              align="center")
                 print("Disconnected from server")
                 time.sleep(3)
             else:
