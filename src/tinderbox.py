@@ -211,10 +211,10 @@ def tone_control_loop(client_socket):
                 print(e)
                 disconnect = True
         elif new_press.count(True) == 2:
-            if 6 > multi_button_press >= 3:
+            if 5 > multi_button_press >= 2.5:
                 with canvas(oled_screen) as draw:
                     draw.text((8, 16), "Disconnecting from\nBT Device...", font=medium_font, fill=1, align="center")
-            if multi_button_press >= 6:
+            if multi_button_press >= 5:
                 client_socket.close()
                 disconnect = True
                 with canvas(oled_screen) as draw:
@@ -232,7 +232,7 @@ def tone_control_loop(client_socket):
 
 # Start "main" logic
 def handler(signal_received, frame):
-    # Handle any cleanup here
+    # Hard exit cleanup
     blank_screen()
     GPIO.cleanup()
     print('SIGINT or CTRL-C detected. Exiting TinderBox.')
@@ -244,7 +244,7 @@ def handler(signal_received, frame):
 
 
 if __name__ == '__main__':
-    # Tell Python to run the handler() function when SIGINT is recieved
+    # Tell Python to run the handler() function when Ctrl+C (SIGINT) is recieved
     signal(SIGINT, handler)
 
 show_startup_splash()
