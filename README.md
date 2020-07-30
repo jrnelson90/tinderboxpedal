@@ -29,4 +29,7 @@ On demo server, edit `demoLedServer.py` to match your LED GPIO mapping before ru
 - 2x Male 1/4" (6.35mm) TRS to Female 1/8" (3.5mm) TRS Adapters
 - Female Pin Header for the Display
 - Hammond 1590B Enclosure
-- Raspberry Pi Power Swtich Cable
+- Raspberry Pi Power Switch Cable
+
+![](src/prototype.jpg)
+![](src/inner_pedal.jpg)
