@@ -1,6 +1,8 @@
 # tinderboxpedal
 BT "Universal Remote" Control Code for Digital Guitar Amps
 
+https://github.com/jrnelson90/tinderboxpedal/wiki/Basic-Project-Q&A
+
 ## Enivronment Setup Notes:
 
 * So far only tested with the Positive Grid Spark 40 Amp
