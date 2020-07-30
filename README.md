@@ -8,3 +8,12 @@ BT "Universal Remote" Control Code for Digital Guitar Amps
 On client, edit `tinderbox.py` to match your GPIO mapping or OLED screen type before running.
 
 On demo server, edit `demoLedServer.py` to match your LED GPIO mapping before running.
+##Basic Schematic:
+![](src\tinderbox_hat.png)
+
+## Essential Parts Needed:
+- Raspberry Pi Zero W
+- SD Card (at least 8GB)
+- Pi Power Supply
+- 128x64 I2C OLED
+- 4 SPST Normally Open Momentary Switches
