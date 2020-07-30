@@ -9,7 +9,7 @@ On client, edit `tinderbox.py` to match your GPIO mapping or OLED screen type be
 
 On demo server, edit `demoLedServer.py` to match your LED GPIO mapping before running.
 ##Basic Schematic:
-![](src\tinderbox_hat.png)
+![](src/tinderbox_hat.png)
 
 ## Essential Parts Needed:
 - Raspberry Pi Zero W
