@@ -1,6 +1,7 @@
 # tinderboxpedal
 BT "Universal Remote" Control Code for Digital Guitar Amps
-[![]()](https://www.youtube.com/watch?v=tqi_EmIKPC0)
+
+Tone Demo Video: https://www.youtube.com/watch?v=tqi_EmIKPC0
 
 https://github.com/jrnelson90/tinderboxpedal/wiki/Basic-Project-Q&A
 
