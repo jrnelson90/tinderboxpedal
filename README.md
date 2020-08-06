@@ -1,13 +1,14 @@
 # tinderboxpedal
 BT "Universal Remote" Control Code for Digital Guitar Amps
+[![]()](https://www.youtube.com/watch?v=tqi_EmIKPC0)
 
 https://github.com/jrnelson90/tinderboxpedal/wiki/Basic-Project-Q&A
 
 ## Enivronment Setup Notes:
-
 * So far only tested with the Positive Grid Spark 40 Amp
 * So far only tested to run on the latest Raspberry Pi OS 32-bit lite image on Pi Zero W and Pi 4B (https://www.raspberrypi.org/documentation/installation/installing-images/README.md).
 * **Raspberry Pi OS Lite Setup:** https://github.com/jrnelson90/tinderboxpedal/wiki/Raspberry-Pi-OS-Lite-Setup
+* **ESP32 Arduino-Core Sketch and Schematic coming soon!**
 
 On client, edit `tinderbox.py` to match your GPIO mapping or OLED screen type before running.
 On demo server (to run on another Pi if you don't have a Spark yet), edit `demoLedServer.py` to match your LED GPIO mapping before running.
