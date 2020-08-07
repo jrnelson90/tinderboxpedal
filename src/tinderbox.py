@@ -34,7 +34,7 @@ GPIO.setup(BUTTON_3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BUTTON_4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 print("GPIO Setup Complete")
 
-source_dir = os.getcwd();
+source_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Load fonts
 font = ImageFont.load_default()
