@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 from signal import signal, SIGINT
 from sys import exit
 import time
+import os
 
 VERSION = "0.3"
 # Set Connection Port Default
@@ -33,11 +34,13 @@ GPIO.setup(BUTTON_3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(BUTTON_4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 print("GPIO Setup Complete")
 
+source_dir = os.getcwd();
+
 # Load fonts
 font = ImageFont.load_default()
-medium_font = ImageFont.truetype('./roboto/Roboto-Regular.ttf', 14)
-logo_font = ImageFont.truetype('./Market_Deco.ttf', 24)
-large_font = ImageFont.truetype('./Market_Deco.ttf', 56)
+medium_font = ImageFont.truetype('{}/roboto/Roboto-Regular.ttf'.format(source_dir), 14)
+logo_font = ImageFont.truetype('{}/Market_Deco.ttf'.format(source_dir), 24)
+large_font = ImageFont.truetype('{}/Market_Deco.ttf'.format(source_dir), 56)
 print("Font Setup Complete")
 
 # Setup 128x64 I2C OLED Display:
@@ -66,7 +69,7 @@ def show_startup_splash():
     print("Showing Startup Splash")
 
     regulator = framerate_regulator(fps=0)
-    flame_animation = Image.open("./flame.gif")
+    flame_animation = Image.open("{}/flame.gif".format(source_dir))
     for frame in ImageSequence.Iterator(flame_animation):
         with regulator:
             oled_screen.display(frame.convert(oled_screen.mode).resize(oled_screen.size, resample=Image.LANCZOS))
