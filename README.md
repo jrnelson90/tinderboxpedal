@@ -16,6 +16,7 @@ On client, edit `tinderbox.py` or `tinderbox.ino` to match your GPIO mapping or 
 On demo server (to run on another Pi if you don't have a Spark yet), edit `demoLedServer.py` to match your LED GPIO mapping before running.
 
 ## Basic Schematic:
+**Wiring is more or less the same for ESP32, in this code pins 4, 5, 18, and 19 are used, but your ESP32 dev board GPIO is likely different, so double-check!**
 ![](src/tinderbox_hat.png)
 
 ## Essential Parts Needed:
