@@ -1,10 +1,10 @@
 #include <Wire.h>
-#include "SSD1306Wire.h"
+#include "SSD1306Wire.h" // https://github.com/ThingPulse/esp8266-oled-ssd1306
 //#include "SH1106Wire.h"
-#include "BluetoothSerial.h"
+#include "BluetoothSerial.h" // https://github.com/espressif/arduino-esp32
 #include "font.h"
 #include "spark.h"
-#include <BfButton.h>
+#include <BfButton.h> //https://github.com/mickey9801/ButtonFever
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
