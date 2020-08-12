@@ -99,10 +99,10 @@ void displayStartup() {
   oled.clear();
   oled.setFont(ArialMT_Plain_24);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
-  oled.drawString(64, 6, "TinderBox");
+  oled.drawString(64, 12, "TinderBox");
   oled.setFont(ArialMT_Plain_16);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
-  oled.drawString(64, 30, "ESP32 v0.3");
+  oled.drawString(64, 36, "ESP32 v0.3");
   oled.display();
   
   delay(4000);
