@@ -40,7 +40,6 @@ BluetoothSerial SerialBT;
 // Device State Variables
 int selected_tone_preset;
 bool connected;
-bool disconnected;
 
 void switchingPressHandler (BfButton *btn, BfButton::press_pattern_t pattern) {
   // If single press detected
