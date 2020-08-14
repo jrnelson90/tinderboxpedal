@@ -1,5 +1,5 @@
 # tinderboxpedal
-BT "Universal Remote" Control Code for Digital Guitar Amps
+Bluetooth "Universal Remote" Footpedal for Digital Guitar Amps, on ESP32 or Pi Zero W
 
 Tone Demo Video: https://www.youtube.com/watch?v=tqi_EmIKPC0
 
