@@ -15,7 +15,7 @@ https://github.com/jrnelson90/tinderboxpedal/wiki/Basic-Project-Q&A
 On client, edit `tinderbox.py` or `tinderbox.ino` to match your GPIO mapping or OLED screen type before running.
 On demo server (to run on another Pi if you don't have a Spark yet), edit `demoLedServer.py` to match your LED GPIO mapping before running.
 
-## Basic Schematic:
+## Basic Schematics:
 ### Raspberry Pi Schematic
 ![](src/tinderbox_hat.png)
 
@@ -25,11 +25,11 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 ![](src/TinderBox_Pedal_ESP32_v2.png)
 
 ## Essential Parts Needed:
-- Raspberry Pi Zero W
-- SD Card (at least 8GB)
-- Pi Power Supply
-- 128x64 I2C OLED
+- Raspberry Pi Zero W + SD Card (at least 8GB) **or** ESP32 Dev Board
+- USB Power Supply (2.5 Amps)
+- 128x64 I2C OLED (SSD1306 or SH1106)
 - 4x SPST Normally Open Momentary Switches
+
 
 ## Other Parts Used In Justin's Prototype:
 - Prototype PCB
