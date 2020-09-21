@@ -22,7 +22,7 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 
 ### ESP32 Schematic
 **In this code pins 4, 5, 18, and 19 are used for button input. Your ESP32 dev board's GPIO layout may be different, so please double-check after wiring and before running!**
-![](src/TinderBox_Pedal_ESP32.png)
+![](src/tinderbox_ESP32.png)
 
 ## Essential Parts Needed:
 - Raspberry Pi Zero W + SD Card (at least 8GB) **or** ESP32 Dev Board
