@@ -31,7 +31,7 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 - 4x SPST Normally Open Momentary Switches
 
 
-## Other Parts Used In Justin's Prototype:
+## Other Parts Used In Justin's First Pi Prototype:
 - Prototype PCB
 - 2x Female 1/8" (3.5mm) TRS Sockets
 - 2x Male 1/8" (3.5mm) TRS Couplings
