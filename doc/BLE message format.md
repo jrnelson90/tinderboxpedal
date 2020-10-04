@@ -16,7 +16,7 @@ At offset 0x06, the complete message size is sent (including the size of 6-byte 
 |--------|------|
 | Data   | size |
 
-Next 11 bytes are also fixed
+Next 11 bytes are fixed for the first packet in response.
 
 | Offset | 07 | 08 | 09 | 0A | 0B | 0C | 0D | 0E | 0F | 10 | 11 |
 |--------|----|----|----|----|----|----|----|----|----|----|----|
@@ -55,6 +55,7 @@ Arguments are defined by their type (1 byte) and variable length value.
 | Value | Type |
 |-------|------|
 | 00    | Integer number
+| 01    | Sequence (?)
 | 02    | String list
 | 42    | Boolean "True"
 | 43    | Boolean "False"
@@ -90,9 +91,18 @@ Have no value bytes associated with them.
 
 | Value | Operation  |
 |-------|------------|
+|  00   | Info       |
 |  01   | Set        |
 |  02   | Get        |
 |  03   | Response(?)|
+|  f0   | Sequence(?)| 
+
+
+## INFO Operation
+
+The only known operation is 
+
+02 23  - Get hardware ID
 
 
 ## SET operation
@@ -138,3 +148,28 @@ This command has two arguments:
 
 This command has one argument:
  - Integer number - Preset number starting 0 (the values are 00 00 - 00 03)
+
+## GET Operations
+
+Following GET operations are known:
+
+| Parameter |                       |
+|-----------|-----------------------|
+|  01       | Get preset configuration
+|  02       |
+|  11       | Get device name
+
+### 01 Get preset configuration
+
+Multiple arguments, only first one is actually used
+
+ - Integer number - Preset number starting 0, or 0x0100 for "current"
+ - 34x "0x00" (that is 11x "Integer number, value 0" + 0x00)
+
+## "ACK" packets
+
+After a successful operation, amp sends back an "ack" packet with
+
+Command = 0x00 (info)
+Parameter = 0x04
+Value = 0x15
