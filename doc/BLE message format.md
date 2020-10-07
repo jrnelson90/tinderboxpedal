@@ -4,23 +4,54 @@ Data was collected using Bluetooth traffic snooping on Android phone. It was a s
 
 ## Data frame format
 
-The first six bytes are the same any directions
+Each data packet starts with a header:
 
-| Offset | 00 | 01 | 02 | 03 | 04 | 05 |
-|--------|----|----|----|----|----|----|
-| Data   | 01 | fe | 00 | 00 | 53 | fe |
+| Offset | 00 | 01 | 02 | 03 |
+|--------|----|----|----|----|
+| Data   | 01 | fe | 00 | 00 |
 
-At offset 0x06, the complete message size is sent (including the size of 6-byte header) (NOTE: see definition of trailer below, maybe it is (size-1))
+
+The next two bytes are depending on direction:
+
+Receive (from Spark):
+
+| Offset | 04 | 05 |
+|--------|----|----|
+| Data   | 41 | ff |
+
+
+Send (to Spark):
+
+| Offset | 04 | 05 |
+|--------|----|----|
+| Data   | 53 | fe |
+
+At offset 0x06, the data size for this packet is sent (including the size of 6-byte header) 
 
 | Offset |  06  | 
 |--------|------|
 | Data   | size |
 
-Next 11 bytes are fixed for the first packet in response.
+The maximum length of the data received from the Spark is 0x6a,
+longer messages are split into multiple packets.
 
-| Offset | 07 | 08 | 09 | 0A | 0B | 0C | 0D | 0E | 0F | 10 | 11 |
-|--------|----|----|----|----|----|----|----|----|----|----|----|
-| Data   | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | f0 | 01 |
+There seems to be no such limit for the data sent to the Spark.
+TODO: verify how completely new preset is sent.
+
+Next 9 bytes are always zeroes:
+
+| Offset | 07 | 08 | 09 | 0A | 0B | 0C | 0D | 0E | 0F |
+|--------|----|----|----|----|----|----|----|----|----|
+| Data   | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 |
+
+### Case of first packet / single packet response:
+
+The next two bytes are fixed:
+
+| Offset | 10 | 11 |
+|--------|----|----|
+| Data   | f0 | 01 |
+
 
 At offset 0x12 (and most likely offset 0x13 as well), sequence number is sent
 
@@ -38,13 +69,18 @@ Command is encoded at offset 0x14 - 0x15
 
 It may be followed by zero, one or three arguments (pedal name, control ID and control value)
 
-Each data packet ends with a trailer
+### Response continuation
 
-| Offset | xx | xy       |
-|--------|----|----------|
-| Data   | f7 | 79 or 65 |
+For a response that does not fil into a single packet, the next bytes
+starting at offset 0x10 are just continuation of the message (no additional prefixes or sequence number.
 
-The "size" value after the header is equal to "xy".
+### Last packet in response / single packet response
+
+The last data packet ends with a trailer
+
+| Offset | xx |
+|--------|----|
+| Data   | f7 |
 
 ## Arguments
 
