@@ -8,9 +8,9 @@ https://github.com/jrnelson90/tinderboxpedal/wiki/Basic-Project-Q&A
 ## Enivronment Setup Notes:
 * So far only tested with the Positive Grid Spark 40 Amp
 * Pi version has so far only tested to run on the latest Raspberry Pi OS 32-bit lite image on Pi Zero W and Pi 4B (https://www.raspberrypi.org/documentation/installation/installing-images/README.md).
+* **ESP32 Setup:** https://github.com/jrnelson90/tinderboxpedal/wiki/ESP32-Arduino-Core-Setup-for-TinderBox-ESP-v0.3.1
 * **Raspberry Pi OS Lite Setup:** https://github.com/jrnelson90/tinderboxpedal/wiki/Raspberry-Pi-OS-Lite-Setup
 * ESP32 version has so far only been tested in Arduino IDE with the MELIFE Dev Board (https://www.amazon.com/gp/product/B07Q576VWZ). **Please check your specific ESP32 dev board pinouts if attempting to use this version.**
-* **Full ESP32 Arduino-Core Setup coming soon!**
 
 On client, edit `tinderbox.py` or `tinderbox.ino` to match your GPIO mapping or OLED screen type before running.
 On demo server (to run on another Pi if you don't have a Spark yet), edit `demoLedServer.py` to match your LED GPIO mapping before running.
