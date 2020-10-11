@@ -45,19 +45,20 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 
 ![](src/inner_pedal.jpg)
 
-# Other great projects used in this include:
-## Pi
+## Other great projects used in this include:
+### Pi
 * Luma: https://github.com/rm-hull/luma.core
 * Pillow: https://github.com/python-pillow/Pillow
 
-## ESP32
+### ESP32
 * ESP32 Arduino-Core:  https://github.com/espressif/arduino-esp32
 * Thingpulse SSD1306/SH1106 ESP Driver: https://github.com/ThingPulse/esp8266-oled-ssd1306
 * ButtonFever: https://github.com/mickey9801/ButtonFever
 
-## Wireless Sniffing
+### Wireless Sniffing
 * Wireshark: https://github.com/wireshark/wireshark
 
+## License
 
 Copyright 2020 TinderBox Pedal Project and Justin Nelson
 
