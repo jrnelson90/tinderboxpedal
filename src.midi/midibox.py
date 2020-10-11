@@ -111,9 +111,9 @@ class MidiInterface(object):
         logging.debug('Changed to slot {0}'.format(slot))
         for button in range(0,3):
             if button == slot:
-                msg = [ NOTE_ON, 36+button , 127 ]
+                msg = [ NOTE_ON, 91+button , 127 ]
             else:
-                msg = [ NOTE_ON, 36+button , 0 ]
+                msg = [ NOTE_ON, 91+button , 0 ]
             self.outdev.send_message(msg)
         return None
 
