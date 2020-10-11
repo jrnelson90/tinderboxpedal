@@ -45,7 +45,7 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 
 ![](src/inner_pedal.jpg)
 
-## Other great projects used in this include:
+## Other great projects used in the TinderBox Pedal include:
 ### Pi
 * Luma: https://github.com/rm-hull/luma.core
 * Pillow: https://github.com/python-pillow/Pillow
