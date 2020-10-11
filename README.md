@@ -16,13 +16,13 @@ On client, edit `tinderbox.py` or `tinderbox.ino` to match your GPIO mapping or 
 On demo server (to run on another Pi if you don't have a Spark yet), edit `demoLedServer.py` to match your LED GPIO mapping before running.
 
 ## Basic Schematics:
-### Raspberry Pi Schematic
-![](src/tinderbox_hat.png)
-
 
 ### ESP32 Schematic
 **In this code pins 4, 5, 18, and 19 are used for button input. Your ESP32 dev board's GPIO layout may be different, so please double-check after wiring and before running!**
 ![](src/tinderbox_ESP32.png)
+
+### Raspberry Pi Schematic
+![](src/tinderbox_hat.png)
 
 ## Essential Parts Needed:
 - Raspberry Pi Zero W + SD Card (at least 8GB) **or** ESP32 Dev Board
@@ -43,3 +43,17 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 
 ![](src/prototype.jpg)
 ![](src/inner_pedal.jpg)
+
+
+Other great projects used in this include:
+-Pi-
+Luma: https://github.com/rm-hull/luma.core
+Pillow: https://github.com/python-pillow/Pillow
+
+-ESP32-
+ESP32 Arduino-Core:  https://github.com/espressif/arduino-esp32
+Thingpulse SSD1306/SH1106 ESP Driver: https://github.com/ThingPulse/esp8266-oled-ssd1306
+ButtonFever: https://github.com/mickey9801/ButtonFever
+
+-Wireless Sniffing-
+Wireshark: https://github.com/wireshark/wireshark
