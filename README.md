@@ -42,18 +42,33 @@ On demo server (to run on another Pi if you don't have a Spark yet), edit `demoL
 - Raspberry Pi Power Switch Cable
 
 ![](src/prototype.jpg)
+
 ![](src/inner_pedal.jpg)
 
-
-Other great projects used in this include:
--Pi-
+# Other great projects used in this include:
+## Pi
 Luma: https://github.com/rm-hull/luma.core
 Pillow: https://github.com/python-pillow/Pillow
 
--ESP32-
+## ESP32
 ESP32 Arduino-Core:  https://github.com/espressif/arduino-esp32
 Thingpulse SSD1306/SH1106 ESP Driver: https://github.com/ThingPulse/esp8266-oled-ssd1306
 ButtonFever: https://github.com/mickey9801/ButtonFever
 
--Wireless Sniffing-
+## Wireless Sniffing
 Wireshark: https://github.com/wireshark/wireshark
+
+
+Copyright 2020 TinderBox Pedal Project and Justin Nelson
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
