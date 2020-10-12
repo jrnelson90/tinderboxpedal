@@ -20,6 +20,8 @@ Following packages should be installed:
     sudo apt install python3-bluez
     sudo apt install python3-rtmidi
 
+and restart the Pi.
+
 Make sure that no other Bluetooth device is connected to your Spark, and start the script with
 
     python3 ./midibox.py
