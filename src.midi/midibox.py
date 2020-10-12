@@ -109,7 +109,7 @@ class MidiInterface(object):
 
     def set_slot(self, slot: int):
         logging.debug('Changed to slot {0}'.format(slot))
-        for button in range(0,3):
+        for button in range(0,4):
             if button == slot:
                 msg = [ NOTE_ON, 91+button , 127 ]
             else:
