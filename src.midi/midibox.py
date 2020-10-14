@@ -10,12 +10,20 @@ VERSION = '0.3-midi'
 SERVER_PORT = 2
 
 # Hex Code Spark Tone Commands
-TONE_1 = '01fe000053fe1a000000000000000000f00124000138000000f7'
-TONE_2 = '01fe000053fe1a000000000000000000f00123010138000001f7'
-TONE_3 = '01fe000053fe1a000000000000000000f00125020138000002f7'
-TONE_4 = '01fe000053fe1a000000000000000000f00120030138000003f7'
+TONE_1   = '01 38 00 00 00'
+TONE_2   = '01 38 00 00 01'
+TONE_3   = '01 38 00 00 02'
+TONE_4   = '01 38 00 00 03'
 TONE_CMD_LIST = [TONE_1, TONE_2, TONE_3, TONE_4]
 
+CONFIG_1 = '02 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+CONFIG_2 = '02 01 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+CONFIG_3 = '02 01 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+CONFIG_4 = '02 01 00 00 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+CONFIG_CMD_LIST = [CONFIG_1, CONFIG_2, CONFIG_3, CONFIG_4]
+
+HW_NAME  = '02 11'
+HW_ID    = '02 23'
 
 class BluetoothInterface(object):
     def __init__(self):
@@ -35,14 +43,37 @@ class BluetoothInterface(object):
         self.bt_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         self.bt_socket.connect((self.spark_mac, SERVER_PORT))
 
-    def send(self, command: str):
+    def send_raw(self, command: str):
+        command = str(command).replace(' ','')
         logging.debug('Sending {0}'.format(command))
         msg = bytes.fromhex(command)
         self.bt_socket.send(msg)
 
+    def send(self, command: str):
+        command = str(command).replace(' ','')
+        logging.debug('Command {0}'.format(command))
+        prefix   = '01 fe 00 00 53 fe'.replace(' ','')
+        suffix1  = '00 00 00 00 00 00 00 00 00'.replace(' ','')
+        suffix2  = 'f0 01'.replace(' ','')
+        fake_seq = '01 01'.replace(' ','')
+        suffix   = 'f7'.replace(' ','')
+        command_len = len(prefix)/2 +                     1 + len(suffix1)/2 + len(suffix2)/2 + len(fake_seq)/2 + len(command)/2 + len(suffix)/2
+        command_len = int(command_len)
+        bt_command =      prefix    + ('%0x' % command_len) +     suffix1    +     suffix2    +     fake_seq    +     command    +     suffix 
+        msg = bytes.fromhex(bt_command)
+        self.bt_socket.send(msg)
+
     def receive(self) -> str:
-        # not implemeted yet
-        return ''
+        last_byte = 0
+        message = ''
+        while  last_byte != 0xf7:
+            data = self.bt_socket.recv(1024)
+            if not data:
+                return message
+            logging.debug('Received {}'.format(bytes.hex(data)[0x10*2:]))
+            last_byte = list(data)[-1]
+            message += bytes.hex(data)[0x10*2:]
+        return message
 
 
 class NoMidiDeviceException(Exception):
@@ -84,8 +115,8 @@ class MidiInterface(object):
         if self.outdev is None:
             raise NoMidiDeviceException
 
-    def get_slot(self):
-        """ Get a MIDI message, convert to slot ID.
+    def get_button(self):
+        """ Get a MIDI message, convert to button (0-7), top row (0-3) to select preset
         Top row:
         DEBUG:root:[144, 91, 0]
         DEBUG:root:[144, 91, 127]
@@ -95,7 +126,17 @@ class MidiInterface(object):
         DEBUG:root:[144, 93, 127]
         DEBUG:root:[144, 94, 0]
         DEBUG:root:[144, 94, 127]
+        Bottom row:
+        DEBUG:root:[144, 86, 127]
+        DEBUG:root:[144, 86, 0]
+        DEBUG:root:[144, 95, 127]
+        DEBUG:root:[144, 95, 0]
+        DEBUG:root:[144, 48, 127]
+        DEBUG:root:[144, 48, 0]
+        DEBUG:root:[144, 49, 127]
+        DEBUG:root:[144, 49, 0]
         """
+        slot = None
         msg = self.indev.get_message()
         if msg:
             message, deltatime = msg
@@ -105,6 +146,18 @@ class MidiInterface(object):
                 if (slot >=0) and (slot <=3):
                     logging.debug('Changing to slot {0}'.format(slot))
                     return slot
+                if message[1] == 86:
+                    slot = 4
+                if message[1] == 95:
+                    slot = 5
+                if message[1] == 48:
+                    slot = 6
+                if message[1] == 49:
+                    slot = 7
+                if slot is not None:
+                    logging.debug('Non-slot button {} pressed'.format(slot))
+                    return slot
+        return None
         return None
 
     def set_slot(self, slot: int):
@@ -120,11 +173,23 @@ class MidiInterface(object):
 
 def tone_control_loop(midi: MidiInterface, bt: BluetoothInterface) -> None:
     selected_slot = 0
+    logging.debug('Amp ID')
+    bt.send(HW_NAME)
+    bt.receive()
+    logging.debug('Amp SN')
+    bt.send(HW_ID)
+    bt.receive()
+    logging.debug('Amp Presets')
+    for slot in range(0, 4):
+        logging.debug('Preset {}'.format(slot))
+        bt.send(CONFIG_CMD_LIST[slot])
+        bt.receive()
     while True:
-        selected_slot = midi.get_slot()
-        if selected_slot is not None:
+        selected_slot = midi.get_button()
+        if selected_slot is not None and selected_slot in range(0, 4):
             bt.send(TONE_CMD_LIST[selected_slot])
             midi.set_slot(selected_slot)
+            bt.receive()
         time.sleep(0.1)
 
 
