@@ -59,7 +59,7 @@ class BluetoothInterface(object):
         suffix   = 'f7'.replace(' ','')
         command_len = len(prefix)/2 +                     1 + len(suffix1)/2 + len(suffix2)/2 + len(fake_seq)/2 + len(command)/2 + len(suffix)/2
         command_len = int(command_len)
-        bt_command =      prefix    + ('%0x' % command_len) +     suffix1    +     suffix2    +     fake_seq    +     command    +     suffix 
+        bt_command =      prefix    + ('%02x' % command_len) +     suffix1    +     suffix2    +     fake_seq    +     command    +     suffix 
         msg = bytes.fromhex(bt_command)
         self.bt_socket.send(msg)
 
@@ -70,9 +70,15 @@ class BluetoothInterface(object):
             data = self.bt_socket.recv(1024)
             if not data:
                 return message
-            logging.debug('Received {}'.format(bytes.hex(data)[0x10*2:]))
             last_byte = list(data)[-1]
-            message += bytes.hex(data)[0x10*2:]
+            # first 0x10 bytes are from known header, igonre them
+            if message == '':
+                # Also remove 'f0 01 xx xx' header from the message
+                logging.debug('Received {}'.format(bytes.hex(data)[0x14*2:]))
+                message += bytes.hex(data)[0x14*2:]
+            else:
+                logging.debug('Received {}'.format(bytes.hex(data)[0x10*2:]))
+                message += bytes.hex(data)[0x10*2:]
         return message
 
 
