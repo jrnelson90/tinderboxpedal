@@ -12,7 +12,9 @@ You will need:
  - a Raspberry Pi 4 (2Gb version should work, 4Gb version was used). It gets hot, invest a few $$s for good passive cooling enclosure. You will need a power supply as well, the official one may be the safest way
  - Ubuntu 20.04 LTS from https://ubuntu.com/download/raspberry-pi installed on a SD card
 
-Unfortunately, my Pi doesn't boot with the MIDI controller attached, making it not possible to autostart the script in its current form. You will need a display and keyboard or set up SSH connction until the issue is resolved.
+If attached to USB3 (green) ports, Pi 3 boots with MIDI controller attached. An example service definition is in the repo, you may want to adjust paths in it
+before installing / enabling it.
+
 
 Following packages should be installed:
 
@@ -26,7 +28,9 @@ Make sure that no other Bluetooth device is connected to your Spark, and start t
 
     python3 ./midibox.py
 
-You should see messages about MIDI devices and Spark discovered (the Spark discovery may take some seconds)
+You should see messages about MIDI device discovered.
 
-The top row of the footswitch is changing amp presets.
+Push the leftmost button on the to row to connect / disconnect the pedal from amplifier.
+
+The bottom row of the footswitch is changing amp presets when connected.
 

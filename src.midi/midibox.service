@@ -1,0 +1,13 @@
+[Unit]
+Description=MIDI pedal
+After=network.target bluetooth.service hciuart.service
+Wants=network-online.target bluetooth.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/home/ubuntu/dev/tinderboxpedal/src.midi/midibox.sh
+Environment=
+
+[Install]
+WantedBy=multi-user.target
