@@ -24,6 +24,7 @@ CONFIG_CMD_LIST = [CONFIG_1, CONFIG_2, CONFIG_3, CONFIG_4]
 
 HW_NAME  = '02 11' # GET NAME
 HW_ID    = '02 23' # GET ID
+CURRENT_CONFIG = '02 10' # GET CURRENT_PRESET
 
 class BluetoothInterface(object):
     def __init__(self):
@@ -191,6 +192,14 @@ def reconnect(bt):
         logging.debug('Preset {}'.format(slot))
         bt.send(CONFIG_CMD_LIST[slot])
         bt.receive()
+    logging.debug('Current preset:')
+    bt.send(CURRENT_CONFIG)
+    messages = bt.receive()
+    preset = None
+    if len(messages) == 1:
+        preset = int.from_bytes(messages[0][-3:-1], "big")
+    return preset
+
 # 0-based, buttons are 0..7
 BUTTON_ONOFF = 0
 BUTTON_PRESET0 = 4 
@@ -229,29 +238,32 @@ def set_preset_led(midi, slot: int):
 
 def tone_control_loop(midi: MidiInterface) -> None:
     set_leds_midi_found(midi)
-    selected_slot = 0
+    selected_slot = None
     bt = BluetoothInterface()
     spark_connected = False
     set_leds_off(midi, spark_connected)
     while True:
         button = midi.get_button()
-        if selected_slot is None:
+        if button is None:
             time.sleep(0.1)
             continue
         if button == BUTTON_ONOFF:
+            selected_slot = None
             if not spark_connected:
                 logging.debug('scan')
                 set_leds_scan(midi)
                 if bt.scan():
                     logging.debug('connect')
                     bt.connect()
-                    reconnect(bt)
+                    selected_slot = reconnect(bt)
                     spark_connected = True
             else:
                 logging.debug('disconnect')
                 bt.disconnect()
                 spark_connected = False
             set_leds_off(midi, spark_connected)
+            if selected_slot is not None:
+                set_preset_led(midi, selected_slot)
         if spark_connected and button in range(BUTTON_PRESET0, BUTTON_PRESET0+NUM_PRESETS):
             selected_slot = button - BUTTON_PRESET0
             try:
