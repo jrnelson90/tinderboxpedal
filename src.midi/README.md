@@ -31,6 +31,7 @@ Make sure that no other Bluetooth device is connected to your Spark, and start t
 You should see messages about MIDI device discovered.
 
 Push the leftmost button on the to row to connect / disconnect the pedal from amplifier.
+When pedal is not connected you can use your mobile app to change settings.
 
 The bottom row of the footswitch is changing amp presets when connected.
 
